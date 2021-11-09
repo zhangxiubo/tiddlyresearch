@@ -4,3 +4,6 @@
 [submodule "plugins/repos/tw5-uglify"]
 	path = plugins/repos/tw5-uglify
 	url = https://github.com/flibbles/tw5-uglify.git
+[submodule "plugins/repos/streams"]
+	path = plugins/repos/streams
+	url = https://github.com/saqimtiaz/streams.git
