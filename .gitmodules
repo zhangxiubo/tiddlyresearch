@@ -13,3 +13,6 @@
 [submodule "plugins/repos/TW5-visjsTimeline"]
 	path = plugins/repos/TW5-visjsTimeline
 	url = https://github.com/kixam/TW5-visjsTimeline.git
+[submodule "plugins/repos/wikilabs"]
+	path = plugins/repos/wikilabs
+	url = https://github.com/wikilabs/plugins.git
