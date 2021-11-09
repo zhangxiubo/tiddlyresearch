@@ -1,3 +1,6 @@
 [submodule "plugins/repos/tw5-relink"]
 	path = plugins/repos/tw5-relink
 	url = https://github.com/flibbles/tw5-relink.git
+[submodule "plugins/repos/tw5-uglify"]
+	path = plugins/repos/tw5-uglify
+	url = https://github.com/flibbles/tw5-uglify.git
