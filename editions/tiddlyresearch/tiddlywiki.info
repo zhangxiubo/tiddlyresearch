@@ -4,9 +4,16 @@
 		"tiddlywiki/tiddlyweb",
 		"tiddlywiki/filesystem",
 		"tiddlywiki/highlight",
-		"fibbles/uglify",
+		"tiddlywiki/hammerjs",
+		"tiddlywiki/markdown",
+		"tiddlywiki/codemirror",
+		"tiddlywiki/codemirror-autocomplete",
+		"tiddlywiki/codemirror-search-replace",
+		"tiddlywiki/katex",
 		"fibbles/relink",
-		"fibbles/relink-titles"
+		"fibbles/relink-titles",
+		"fibbles/uglify",
+		"sq/streams"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",
