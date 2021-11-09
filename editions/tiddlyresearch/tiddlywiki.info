@@ -13,8 +13,10 @@
 		"fibbles/relink",
 		"fibbles/relink-titles",
 		"fibbles/uglify",
+		"wikilabs/uni-link",
 		"kixam/moment",
 		"kixam/timeline",
+		"snowgoon88/edit-comptext",
 		"sq/streams"
 	],
 	"themes": [

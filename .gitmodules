@@ -16,3 +16,6 @@
 [submodule "plugins/repos/wikilabs"]
 	path = plugins/repos/wikilabs
 	url = https://github.com/wikilabs/plugins.git
+[submodule "plugins/repos/TW5-extendedit"]
+	path = plugins/repos/TW5-extendedit
+	url = https://github.com/snowgoon88/TW5-extendedit.git
