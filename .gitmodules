@@ -7,3 +7,9 @@
 [submodule "plugins/repos/streams"]
 	path = plugins/repos/streams
 	url = https://github.com/saqimtiaz/streams.git
+[submodule "plugins/repos/TW5-moment.js"]
+	path = plugins/repos/TW5-moment.js
+	url = https://github.com/kixam/TW5-moment.js.git
+[submodule "plugins/repos/TW5-visjsTimeline"]
+	path = plugins/repos/TW5-visjsTimeline
+	url = https://github.com/kixam/TW5-visjsTimeline.git
