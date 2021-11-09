@@ -13,6 +13,8 @@
 		"fibbles/relink",
 		"fibbles/relink-titles",
 		"fibbles/uglify",
+		"kixam/moment",
+		"kixam/timeline",
 		"sq/streams"
 	],
 	"themes": [
