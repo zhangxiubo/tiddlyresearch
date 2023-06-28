@@ -119,10 +119,12 @@ SimpleEngine.prototype.fixHeight = function() {
 /*
 Focus the engine node
 */
-SimpleEngine.prototype.focus  = function() {
-	if(this.domNode.focus && this.domNode.select) {
+SimpleEngine.prototype.focus = function() {
+	if(this.domNode.focus) {
 		this.domNode.focus();
-		this.domNode.select();
+	}
+	if(this.domNode.select) {
+		$tw.utils.setSelectionByPosition(this.domNode,this.widget.editFocusSelectFromStart,this.widget.editFocusSelectFromEnd);
 	}
 };
 
@@ -133,7 +135,7 @@ SimpleEngine.prototype.handleInputEvent = function(event) {
 	this.widget.saveChanges(this.getText());
 	this.fixHeight();
 	if(this.widget.editInputActions) {
-		this.widget.invokeActionString(this.widget.editInputActions);
+		this.widget.invokeActionString(this.widget.editInputActions,this,event,{actionValue: this.getText()});
 	}
 	return true;
 };
