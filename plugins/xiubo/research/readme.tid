@@ -25,3 +25,9 @@ The Streams submodule uses local branch `codex/research-streams`, commit `1a97a3
 Run `python3 bin/test_stage_research_upgrade.py` to check migration behavior, and `node bin/verify_research_stage.js PATH_TO_TIDDLYWIKI_RUNTIME LOCAL_WIKI_DIRECTORY` to compare the staged wiki with its archived source. Verification allows local title/sidebar changes and the existing Today startup action's date refresh. It requires the original note bodies and relationships to remain unchanged.
 
 Editing child nodes while a parent draft is open writes to the child nodes immediately. Discarding the parent draft discards the parent's draft text; it does not undo those separate child edits. Saved parent drafts merge structural updates through the Streams fork.
+
+!! Relationship repair trial
+
+Run `node bin/stage_stream_relationship_repair.js RUNTIME SOURCE_LOCAL_WIKI NEW_LOCAL_WIKI BACKUP_EXPORT.json` to create a separate trial with a review page and a reversible repair archive. The optional backup export supplies historical comparison evidence. The tool repairs only unique visible ownership one level below a stale parent pointer and removes references to absent child tiddlers. Ambiguous placement and shared references remain unchanged.
+
+Run `node bin/stage_stream_relationship_repair.js RUNTIME --verify LOCAL_TRIAL_WIKI` to check source preservation, visible child ordering, repeatability, and the reverse import. Run `node bin/test_streams_graph.js` for the graph-repair tests.
