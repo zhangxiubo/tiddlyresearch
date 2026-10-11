@@ -1,0 +1,16 @@
+title: $:/plugins/xiubo/research/templates/linked_references
+tags: $:/tags/ViewTemplate
+list-after: $:/plugins/sq/streams/stream-view-template
+
+\whitespace trim
+<$list filter="[all[current]backlinks[]!is[draft]limit[1]]" variable="has_references">
+<hr/>
+<p><b>Linked References</b>:</p>
+<$list filter="[all[current]backlinks[]!is[draft]!sort[modified]]">
+<div class="xz-backref">
+{{||$:/plugins/sq/streams/templates/breadcrumbs}}
+<span class="sq-breadcrumbs-fragment"><$link to=<<currentTiddler>>><$text text={{{ [all[current]has[parent]then[◯]] ~[all[current]get[title]] }}}/></$link></span>
+<div class="xz-outer">{{||$:/plugins/sq/streams/templates/node_preview}}</div>
+</div>
+</$list>
+</$list>

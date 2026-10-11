@@ -1,0 +1,8 @@
+title: $:/plugins/xiubo/research/templates/breadcrumb_label
+
+\whitespace trim
+<$let breadcrumb_pattern="^\s*(\w|\[\[|`|''|//)">
+<$wikify name="breadcrumb_label" text={{{ [all[current]!is[image]!is[binary]!tag[#publication]regexp:text<breadcrumb_pattern>get[text]!is[blank]] ~[all[current]get[publication.title]!is[blank]] ~[all[current]get[title]] }}}>
+<$text text={{{ [<breadcrumb_label>split[]first[50]join[]] }}}/>
+</$wikify>
+</$let>

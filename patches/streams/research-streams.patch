@@ -1,0 +1,683 @@
+From 054cfeee471ae310ce83290c7ab11ed9ac741be1 Mon Sep 17 00:00:00 2001
+From: Xiubo Zhang <zhangxiubo@gmail.com>
+Date: Sun, 11 Oct 2026 12:07:00 +0100
+Subject: [PATCH 1/2] Add shared Streams rendering and research extension
+ points
+
+---
+ package.json                                  |  2 +-
+ .../streams/config/breadcrumb_template.tid    |  3 +
+ .../config/draft_structure_visibility.tid     |  3 +
+ plugins/streams/config/enable_edit_mode.tid   |  6 ++
+ plugins/streams/config/node_tags_filter.tid   |  3 +
+ plugins/streams/draft_structure.js            | 32 +++++++++
+ plugins/streams/filters/stream_ancestors.js   | 24 +++++++
+ plugins/streams/fork_notes.tid                | 17 +++++
+ plugins/streams/license.tid                   | 32 +++++++++
+ plugins/streams/plugin.info                   | 22 +++---
+ plugins/streams/startup/draft_structure.js    | 18 +++++
+ .../streams/templates/breadcrumb_label.tid    |  6 ++
+ .../templates/breadcrumbs-view-template.tid   | 21 +-----
+ plugins/streams/templates/breadcrumbs.tid     |  6 ++
+ plugins/streams/templates/edit_view.tid       | 11 +++
+ plugins/streams/templates/node_preview.tid    |  5 ++
+ .../streams/templates/nodes-list-template.tid | 72 +------------------
+ plugins/streams/templates/outline_content.tid | 26 +++++++
+ .../streams/templates/stream-row-template.tid |  5 +-
+ .../streams/templates/stream_container.tid    | 44 ++++++++++++
+ plugins/streams/widgets/draft_navigator.js    | 27 +++++++
+ plugins/streams/widgets/swiper.js             |  2 +-
+ 22 files changed, 284 insertions(+), 103 deletions(-)
+ create mode 100644 plugins/streams/config/breadcrumb_template.tid
+ create mode 100644 plugins/streams/config/draft_structure_visibility.tid
+ create mode 100644 plugins/streams/config/enable_edit_mode.tid
+ create mode 100644 plugins/streams/config/node_tags_filter.tid
+ create mode 100644 plugins/streams/draft_structure.js
+ create mode 100644 plugins/streams/filters/stream_ancestors.js
+ create mode 100644 plugins/streams/fork_notes.tid
+ create mode 100644 plugins/streams/license.tid
+ create mode 100644 plugins/streams/startup/draft_structure.js
+ create mode 100644 plugins/streams/templates/breadcrumb_label.tid
+ create mode 100644 plugins/streams/templates/breadcrumbs.tid
+ create mode 100644 plugins/streams/templates/edit_view.tid
+ create mode 100644 plugins/streams/templates/node_preview.tid
+ create mode 100644 plugins/streams/templates/outline_content.tid
+ create mode 100644 plugins/streams/templates/stream_container.tid
+ create mode 100644 plugins/streams/widgets/draft_navigator.js
+
+diff --git a/package.json b/package.json
+index 93324f3..8ff5152 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "streams",
+-  "version": "1.2.24",
++  "version": "1.3.0",
+   "description": "tw5 plugin",
+   "tiddlywiki-plugin": "plugins/streams",
+   "config": {
+diff --git a/plugins/streams/config/breadcrumb_template.tid b/plugins/streams/config/breadcrumb_template.tid
+new file mode 100644
+index 0000000..ecfa0ae
+--- /dev/null
++++ b/plugins/streams/config/breadcrumb_template.tid
+@@ -0,0 +1,3 @@
++title: $:/config/sq/streams/breadcrumb_template
++
++$:/plugins/sq/streams/templates/breadcrumb_label
+\ No newline at end of file
+diff --git a/plugins/streams/config/draft_structure_visibility.tid b/plugins/streams/config/draft_structure_visibility.tid
+new file mode 100644
+index 0000000..d4b40c7
+--- /dev/null
++++ b/plugins/streams/config/draft_structure_visibility.tid
+@@ -0,0 +1,3 @@
++title: $:/config/EditTemplateFields/Visibility/draft.streams
++
++hide
+\ No newline at end of file
+diff --git a/plugins/streams/config/enable_edit_mode.tid b/plugins/streams/config/enable_edit_mode.tid
+new file mode 100644
+index 0000000..270ddae
+--- /dev/null
++++ b/plugins/streams/config/enable_edit_mode.tid
+@@ -0,0 +1,6 @@
++title: $:/config/sq/streams/enable_edit_mode
++caption: Show outline in the editor
++description: Edit child nodes while the parent text is open in the main editor
++settings-template: $:/plugins/sq/streams/ui/templates/settings/input-switch
++
++no
+\ No newline at end of file
+diff --git a/plugins/streams/config/node_tags_filter.tid b/plugins/streams/config/node_tags_filter.tid
+new file mode 100644
+index 0000000..735c639
+--- /dev/null
++++ b/plugins/streams/config/node_tags_filter.tid
+@@ -0,0 +1,3 @@
++title: $:/config/sq/streams/node_tags_filter
++
++[all[current]get[tags]]
+\ No newline at end of file
+diff --git a/plugins/streams/draft_structure.js b/plugins/streams/draft_structure.js
+new file mode 100644
+index 0000000..2fae5b8
+--- /dev/null
++++ b/plugins/streams/draft_structure.js
+@@ -0,0 +1,32 @@
++/*\
++title: $:/plugins/sq/streams/draft_structure.js
++type: application/javascript
++module-type: library
++\*/
++(function(){
++"use strict";
++
++var structure_fields = ["parent","stream-list","stream-type"];
++
++exports.capture = function(draft) {
++	var baseline = {};
++	structure_fields.forEach(function(field) {
++		baseline[field] = draft.getFieldString(field);
++	});
++	return new $tw.Tiddler(draft,{"draft.streams": JSON.stringify(baseline)});
++};
++
++exports.merge = function(wiki,saved,draft) {
++	var fields = {"draft.streams": undefined},
++		baseline = $tw.utils.parseJSONSafe(draft.fields["draft.streams"],null),
++		current = wiki.getTiddler(draft.fields["draft.of"]);
++	if(baseline && current) {
++		structure_fields.forEach(function(field) {
++			if(draft.getFieldString(field) === baseline[field]) {
++				fields[field] = current.fields[field];
++			}
++		});
++	}
++	return new $tw.Tiddler(saved,fields);
++};
++})();
+diff --git a/plugins/streams/filters/stream_ancestors.js b/plugins/streams/filters/stream_ancestors.js
+new file mode 100644
+index 0000000..ad76ae0
+--- /dev/null
++++ b/plugins/streams/filters/stream_ancestors.js
+@@ -0,0 +1,24 @@
++/*\
++title: $:/plugins/sq/streams/filters/stream_ancestors.js
++type: application/javascript
++module-type: filteroperator
++\*/
++(function(){
++"use strict";
++
++exports.stream_ancestors = function(source,operator,options) {
++	var results = [];
++	source(function(tiddler,title) {
++		var ancestors = [],
++			visited = new Set([title]),
++			parent = tiddler && options.wiki.getTiddler(tiddler.fields.parent);
++		while(parent && !visited.has(parent.fields.title)) {
++			visited.add(parent.fields.title);
++			ancestors.unshift(parent.fields.title);
++			parent = options.wiki.getTiddler(parent.fields.parent);
++		}
++		$tw.utils.pushTop(results,ancestors);
++	});
++	return results;
++};
++})();
+diff --git a/plugins/streams/fork_notes.tid b/plugins/streams/fork_notes.tid
+new file mode 100644
+index 0000000..eb7057b
+--- /dev/null
++++ b/plugins/streams/fork_notes.tid
+@@ -0,0 +1,17 @@
++title: $:/plugins/sq/streams/fork_notes
++
++! Research fork 1.3.0
++
++Based on upstream Streams 1.2.24, commit 17dfc9cf634338f986acc99413113884cfaba2a0. The plugin keeps its existing title and node fields, and replaces the upstream plugin when installed.
++
++* Uses current event attributes and supports server-side rendering without browser swipe APIs.
++* The outline and editable node previews share one interaction template, including context menus, keyboard actions and swipe handling.
++* `templates/node_preview` renders the current node and its children with editing controls.
++* `templates/breadcrumbs` renders ancestors using the configurable `$:/config/sq/streams/breadcrumb_template`. Traversal stops at missing parents and repeated nodes.
++* `$:/config/sq/streams/node_tags_filter` supplies the values for node styling.
++* Tiddlers tagged `$:/tags/streams/row_decorations` add content beside each row without replacing the row template.
++* `$:/config/sq/streams/enable_edit_mode` enables outlines in the core editor through `$:/tags/EditTemplate`.
++
++When edit-mode integration is enabled, new drafts capture their initial structural fields. Saving keeps later node moves and child-list updates when those fields were not explicitly edited in the draft. Explicit draft field edits take precedence. Draft bookkeeping is removed on save. Drafts created before installing this version have no baseline and retain the core's save behavior.
++
++The supported acceptance-test target for this fork is TiddlyWiki 5.4.1 with Relink 2.6.1. The research presentation choices belong in the separate Research customizations plugin.
+diff --git a/plugins/streams/license.tid b/plugins/streams/license.tid
+new file mode 100644
+index 0000000..c74600f
+--- /dev/null
++++ b/plugins/streams/license.tid
+@@ -0,0 +1,32 @@
++title: $:/plugins/sq/streams/license
++type: text/plain
++
++BSD 3-Clause License
++
++Copyright (c) 2020, saqimtiaz
++All rights reserved.
++
++Redistribution and use in source and binary forms, with or without
++modification, are permitted provided that the following conditions are met:
++
++1. Redistributions of source code must retain the above copyright notice, this
++   list of conditions and the following disclaimer.
++
++2. Redistributions in binary form must reproduce the above copyright notice,
++   this list of conditions and the following disclaimer in the documentation
++   and/or other materials provided with the distribution.
++
++3. Neither the name of the copyright holder nor the names of its
++   contributors may be used to endorse or promote products derived from
++   this software without specific prior written permission.
++
++THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
++DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
++FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
++SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
++CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
++OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+diff --git a/plugins/streams/plugin.info b/plugins/streams/plugin.info
+index 3a2019d..adf9798 100644
+--- a/plugins/streams/plugin.info
++++ b/plugins/streams/plugin.info
+@@ -1,13 +1,13 @@
+ {
+-	"title": "$:/plugins/sq/streams",
+-	"name": "Streams",
+-	"description": "Rapid data entry with a keyboard driven workflow. Divide content into smaller tiddlers as you write.",
+-	"plugin-type": "plugin",
+-	"plugin-priority": "1",
+-	"author": "Saq Imtiaz",
+-	"version": "1.2.24",
+-	"core-version": ">=5.1.23",
+-	"list": "Settings CHANGELOG",
+-	"source": "https://saqimtiaz.github.io/streams/",
+-	"dependents": "$:/plugins/flibbles/relink"
++  "title": "$:/plugins/sq/streams",
++  "name": "Streams (Research fork)",
++  "description": "Streams with shared node controls, breadcrumb and row extensions, and current TiddlyWiki compatibility.",
++  "plugin-type": "plugin",
++  "plugin-priority": "1",
++  "author": "Saq Imtiaz",
++  "version": "1.3.0",
++  "core-version": ">=5.3.0",
++  "list": "Settings CHANGELOG fork_notes",
++  "source": "https://saqimtiaz.github.io/streams/",
++  "dependents": "$:/plugins/flibbles/relink"
+ }
+diff --git a/plugins/streams/startup/draft_structure.js b/plugins/streams/startup/draft_structure.js
+new file mode 100644
+index 0000000..405318d
+--- /dev/null
++++ b/plugins/streams/startup/draft_structure.js
+@@ -0,0 +1,18 @@
++/*\
++title: $:/plugins/sq/streams/startup/draft_structure.js
++type: application/javascript
++module-type: startup
++\*/
++(function(){
++"use strict";
++
++exports.name = "streams-draft-structure";
++exports.after = ["startup"];
++exports.synchronous = true;
++exports.startup = function() {
++	var structure = require("$:/plugins/sq/streams/draft_structure.js");
++	$tw.hooks.addHook("th-saving-tiddler",function(saved,draft) {
++		return structure.merge($tw.wiki,saved,draft);
++	});
++};
++})();
+diff --git a/plugins/streams/templates/breadcrumb_label.tid b/plugins/streams/templates/breadcrumb_label.tid
+new file mode 100644
+index 0000000..773e950
+--- /dev/null
++++ b/plugins/streams/templates/breadcrumb_label.tid
+@@ -0,0 +1,6 @@
++title: $:/plugins/sq/streams/templates/breadcrumb_label
++
++\whitespace trim
++<$wikify name="breadcrumb_label" text={{{ [all[current]!is[binary]get[text]!is[blank]] ~[all[current]get[title]] }}}>
++<$text text={{{ [<breadcrumb_label>split[]first[50]join[]] }}}/>
++</$wikify>
+diff --git a/plugins/streams/templates/breadcrumbs-view-template.tid b/plugins/streams/templates/breadcrumbs-view-template.tid
+index 698ab35..17cedd4 100644
+--- a/plugins/streams/templates/breadcrumbs-view-template.tid
++++ b/plugins/streams/templates/breadcrumbs-view-template.tid
+@@ -5,28 +5,9 @@ tags: $:/tags/ViewTemplate
+ title: $:/plugins/sq/streams/breadcrumbs-view-template
+ type: text/vnd.tiddlywiki
+ 
+-\whitespace trim
+-\define stream-show-breadcrumbs()
+-<$list filter="[<currentTiddler>has[stream-type]]">
+-	<$list filter="[<currentTiddler>has[parent]]">
+-		<$set name="currentTiddler" filter="[{!!parent}]" select="0">
+-			<<stream-show-breadcrumbs>>
+-		</$set>
+-	</$list>	
+-	<$list filter="[<currentTiddler>!match<storyTiddler>]">
+-		<$wikify name="display-title" text={{{ [<currentTiddler>!is[binary]get[text]!is[blank]] ~[{!!title}] }}}>
+-			<span class="sq-breadcrumbs-fragment">
+-			<$link to=<<currentTiddler>>>
+-				<$text text={{{ [<display-title>split[]first[50]join[]] }}}/>
+-			</$link>>
+-			</span>
+-		</$wikify>
+-	</$list>
+-</$list>
+-\end
+ <$list filter="""[<folded-state>get[text]!is[blank]else[show]!match[hide]]""" variable="_NULL">
+ <$list filter="[{$:/config/sq/streams/enable-breadcrumbs}match[yes]]" variable="_NULL">
+-<<stream-show-breadcrumbs>>
++{{||$:/plugins/sq/streams/templates/breadcrumbs}}
+ </$list>
+ </$list>
+ 
+diff --git a/plugins/streams/templates/breadcrumbs.tid b/plugins/streams/templates/breadcrumbs.tid
+new file mode 100644
+index 0000000..c7a0282
+--- /dev/null
++++ b/plugins/streams/templates/breadcrumbs.tid
+@@ -0,0 +1,6 @@
++title: $:/plugins/sq/streams/templates/breadcrumbs
++
++\whitespace trim
++<$list filter="[all[current]stream_ancestors[]]">
++<span class="sq-breadcrumbs-fragment"><$link to=<<currentTiddler>>><$transclude tiddler={{$:/config/sq/streams/breadcrumb_template}}/></$link> &gt; </span>
++</$list>
+diff --git a/plugins/streams/templates/edit_view.tid b/plugins/streams/templates/edit_view.tid
+new file mode 100644
+index 0000000..e86894b
+--- /dev/null
++++ b/plugins/streams/templates/edit_view.tid
+@@ -0,0 +1,11 @@
++title: $:/plugins/sq/streams/templates/edit_view
++tags: $:/tags/EditTemplate
++list-after: $:/core/ui/EditTemplate/body
++
++<$list filter="[{$:/config/sq/streams/enable_edit_mode}match[yes]]" variable="stream_edit_enabled">
++<$tiddler tiddler={{{ [all[current]get[draft.of]is[tiddler]] ~[all[current]] }}}>
++<$list filter="[all[current]subfilter{$:/config/sq/streams/stream-enable-filter}]">
++{{||$:/plugins/sq/streams/nodes-list-template}}
++</$list>
++</$tiddler>
++</$list>
+diff --git a/plugins/streams/templates/node_preview.tid b/plugins/streams/templates/node_preview.tid
+new file mode 100644
+index 0000000..fa8777b
+--- /dev/null
++++ b/plugins/streams/templates/node_preview.tid
+@@ -0,0 +1,5 @@
++title: $:/plugins/sq/streams/templates/node_preview
++
++<$let stream_content_template="$:/plugins/sq/streams/templates/stream-row-template" dropTargetTiddler={{!!parent}}>
++{{||$:/plugins/sq/streams/templates/stream_container}}
++</$let>
+diff --git a/plugins/streams/templates/nodes-list-template.tid b/plugins/streams/templates/nodes-list-template.tid
+index dc9f235..e70729e 100644
+--- a/plugins/streams/templates/nodes-list-template.tid
++++ b/plugins/streams/templates/nodes-list-template.tid
+@@ -1,71 +1,5 @@
+-created: 20171022203553093
+-modified: 20171122050808722
+ title: $:/plugins/sq/streams/nodes-list-template
+ 
+-\import [[$:/plugins/sq/streams/action-macros]] [all[shadows+tiddlers]tag[$:/tags/streams/actionmacros]]  [all[shadows+tiddlers]tag[$:/tags/streams/user-actionmacros]]
+-\whitespace trim
+-
+-<$vars stream-root-title=<<currentTiddler>>
+-	contextmenu-state=<<qualify "$:/state/sq-context-popup">>
+-	row-edit-state=<<qualify "$:/state/sq/streams/current-edit-tiddler">>
+-	drag-title-state=<<qualify "$:/state/sq/streams/current-drag-title">>
+-	drag-title-nextsibling-state=<<qualify "$:/state/sq/streams/current-drag-nextsibling">> 
+->
+-	<$eventcatcher
+-		events="click"
+-		selector=".stream-node-ctrl-btn"
+-		actions-click=<<node-ctrl-btn-actions>>
+-		tag="div"
+-	>
+-	<$eventcatcher
+-		events="dblclick swiped-right swiped-left"
+-		tag="div"
+-		selector=".stream-row"
+-		actions-dblclick=<<toggle-row-edit-state>>
+-		actions-swiped-right=<<swiped-right-actions>>
+-		actions-swiped-left=<<swiped-left-actions>>
+-	>
+-	<$eventcatcher
+-		tag="div"
+-		events="contextmenu"
+-		selector=".sq-contextmenu-container"
+-		actions-contextmenu=<<oncontext-menu-actions>>
+-	>
+-	<$swiper
+-		tag="div"
+-		enable={{$:/config/sq/streams/swipe-enabled}}
+-		swipethreshold={{$:/config/sq/streams/swipe-threshold}}
+-	>
+-	<div class={{{ stream-root [{$:/state/sq/nodes/global-drag-state}match[yes]then[stream-dragactive]] [<currentTiddler>!has[stream-list]then[stream-newlist]] +[join[ ]] }}}>
+-		{{||$:/plugins/sq/streams/templates/stream-root-template}}
+-		<$list filter="[all[current]match<stream-root-title>]" variable="_NULL">
+-			<!-- if we are the root, add a button to add more nodes-->
+-			<div class="stream-row">
+-				<div class="stream-node-control stream-node-control-addnew">
+-					<div class="stream-node-collapser">
+-					</div>
+-					<div class="stream-node-handle">
+-						<$button tag="div" class="tc-btn-invisible" tooltip="add node" actions=<<add-new-node-actions>> >
+-							{{$:/plugins/sq/streams/icons/new-node-btn}}
+-						</$button>
+-					</div>
+-					<$list filter="[all[shadows+tiddlers]tag[$:/tags/streams/root-buttons]]" variable="btnTiddler">
+-						<div class="stream-node-handle">
+-							<$transclude tiddler=<<btnTiddler>>/>
+-						</div>
+-					</$list>
+-				</div>
+-				<div class="stream-node-block">
+-					<!--consider moving last child dropzone in here, though thats for children too-->
+-				</div>
+-			</div>				
+-			<$set name="currentTiddler" filter={{{[<contextmenu-state>get[current]]}}}>
+-				{{||$:/plugins/sq/streams/contextmenu/contextmenu-template}}
+-			</$set>
+-		</$list>	
+-	</div>
+-	</$swiper>
+-	</$eventcatcher>
+-	</$eventcatcher>
+-	</$eventcatcher>
+-</$vars>
++<$let stream_content_template="$:/plugins/sq/streams/templates/outline_content">
++{{||$:/plugins/sq/streams/templates/stream_container}}
++</$let>
+diff --git a/plugins/streams/templates/outline_content.tid b/plugins/streams/templates/outline_content.tid
+new file mode 100644
+index 0000000..e0ccc0c
+--- /dev/null
++++ b/plugins/streams/templates/outline_content.tid
+@@ -0,0 +1,26 @@
++title: $:/plugins/sq/streams/templates/outline_content
++
++\whitespace trim
++		{{||$:/plugins/sq/streams/templates/stream-root-template}}
++		<$list filter="[all[current]match<stream-root-title>]" variable="_NULL">
++			<!-- if we are the root, add a button to add more nodes-->
++			<div class="stream-row">
++				<div class="stream-node-control stream-node-control-addnew">
++					<div class="stream-node-collapser">
++					</div>
++					<div class="stream-node-handle">
++						<$button tag="div" class="tc-btn-invisible" tooltip="add node" actions=<<add-new-node-actions>> >
++							{{$:/plugins/sq/streams/icons/new-node-btn}}
++						</$button>
++					</div>
++					<$list filter="[all[shadows+tiddlers]tag[$:/tags/streams/root-buttons]]" variable="btnTiddler">
++						<div class="stream-node-handle">
++							<$transclude tiddler=<<btnTiddler>>/>
++						</div>
++					</$list>
++				</div>
++				<div class="stream-node-block">
++					<!--consider moving last child dropzone in here, though thats for children too-->
++				</div>
++			</div>
++</$list>
+diff --git a/plugins/streams/templates/stream-row-template.tid b/plugins/streams/templates/stream-row-template.tid
+index a040d04..085466c 100644
+--- a/plugins/streams/templates/stream-row-template.tid
++++ b/plugins/streams/templates/stream-row-template.tid
+@@ -16,7 +16,7 @@ title: $:/plugins/sq/streams/templates/stream-row-template
+ 	<div class="tc-droppable-placeholder"/>
+ 	<div class={{{ stream-row [<row-children-visibility-state>get[text]match[hide]then[stream-row-children-collapsed]] +[join[ ]]}}}
+ 		data-node-title=<<currentTiddler>>
+-		data-node-tags={{!!tags}}
++		data-node-tags={{{ [all[current]subfilter{$:/config/sq/streams/node_tags_filter}] +[join[, ]] }}}
+ 	>
+ 		<$draggable
+ 			tag="div"
+@@ -40,6 +40,9 @@ title: $:/plugins/sq/streams/templates/stream-row-template
+ 				</$keyboard-plus>			
+ 			</$list>
+ 		</div>
++		<$list filter="[all[shadows+tiddlers]tag[$:/tags/streams/row_decorations]!is[draft]]" variable="stream_decoration">
++			<$transclude tiddler=<<stream_decoration>>/>
++		</$list>
+ 	</div>
+ </$droppable>
+ <$reveal
+diff --git a/plugins/streams/templates/stream_container.tid b/plugins/streams/templates/stream_container.tid
+new file mode 100644
+index 0000000..83a0cdb
+--- /dev/null
++++ b/plugins/streams/templates/stream_container.tid
+@@ -0,0 +1,44 @@
++title: $:/plugins/sq/streams/templates/stream_container
++
++\import [[$:/plugins/sq/streams/action-macros]] [all[shadows+tiddlers]tag[$:/tags/streams/actionmacros]]  [all[shadows+tiddlers]tag[$:/tags/streams/user-actionmacros]]
++\whitespace trim
++
++<$vars stream-root-title=<<currentTiddler>>
++	contextmenu-state=<<qualify "$:/state/sq-context-popup">>
++	row-edit-state=<<qualify "$:/state/sq/streams/current-edit-tiddler">>
++	drag-title-state=<<qualify "$:/state/sq/streams/current-drag-title">>
++	drag-title-nextsibling-state=<<qualify "$:/state/sq/streams/current-drag-nextsibling">>
++>
++	<$eventcatcher
++		selector=".stream-node-ctrl-btn"
++		$click=<<node-ctrl-btn-actions>>
++		tag="div"
++	>
++	<$eventcatcher
++		tag="div"
++		selector=".stream-row"
++		$dblclick=<<toggle-row-edit-state>>
++		$swiped-right=<<swiped-right-actions>>
++		$swiped-left=<<swiped-left-actions>>
++	>
++	<$eventcatcher
++		tag="div"
++		selector=".sq-contextmenu-container"
++		$contextmenu=<<oncontext-menu-actions>>
++	>
++	<$swiper
++		tag="div"
++		enable={{$:/config/sq/streams/swipe-enabled}}
++		swipethreshold={{$:/config/sq/streams/swipe-threshold}}
++	>
++	<div class={{{ stream-root [{$:/state/sq/nodes/global-drag-state}match[yes]then[stream-dragactive]] [<currentTiddler>!has[stream-list]then[stream-newlist]] +[join[ ]] }}}>
++		<$transclude tiddler=<<stream_content_template>>/>
++		<$set name="currentTiddler" filter={{{ [<contextmenu-state>get[current]] }}}>
++			{{||$:/plugins/sq/streams/contextmenu/contextmenu-template}}
++		</$set>
++	</div>
++	</$swiper>
++	</$eventcatcher>
++	</$eventcatcher>
++	</$eventcatcher>
++</$vars>
+diff --git a/plugins/streams/widgets/draft_navigator.js b/plugins/streams/widgets/draft_navigator.js
+new file mode 100644
+index 0000000..b299711
+--- /dev/null
++++ b/plugins/streams/widgets/draft_navigator.js
+@@ -0,0 +1,27 @@
++/*\
++title: $:/plugins/sq/streams/widgets/draft_navigator.js
++type: application/javascript
++module-type: widget-subclass
++\*/
++(function(){
++"use strict";
++
++var Navigator = require("$:/core/modules/widgets/navigator.js").navigator,
++	structure = require("$:/plugins/sq/streams/draft_structure.js");
++
++exports.baseClass = "navigator";
++exports.constructor = function(parseTreeNode,options) {
++	this.initialise(parseTreeNode,options);
++};
++exports.prototype = {
++	makeDraftTiddler: function(title) {
++		var existing = this.wiki.findDraft(title),
++			draft = Navigator.prototype.makeDraftTiddler.call(this,title);
++		if(!existing && this.wiki.getTiddlerText("$:/config/sq/streams/enable_edit_mode") === "yes") {
++			draft = structure.capture(draft);
++			this.wiki.addTiddler(draft);
++		}
++		return draft;
++	}
++};
++})();
+diff --git a/plugins/streams/widgets/swiper.js b/plugins/streams/widgets/swiper.js
+index 27d2905..41b9ff9 100644
+--- a/plugins/streams/widgets/swiper.js
++++ b/plugins/streams/widgets/swiper.js
+@@ -41,7 +41,7 @@ SwipeWidget.prototype.render = function(parent,nextSibling) {
+ 		tag = this.swipeTag;
+ 	}	
+ 	var domNode = this.document.createElement(tag);
+-	if(this.swipeEnable) {
++	if(this.swipeEnable && !this.document.isTiddlyWikiFakeDom) {
+ 		SwipeEvents(domNode,{"swipe-threshold": this.swipeThreshold});
+ 	}
+ 	parent.insertBefore(domNode,nextSibling);
+-- 
+2.43.0
+
+
+From 1a97a328c896229137083d5aa48a8b67a10c8b29 Mon Sep 17 00:00:00 2001
+From: Xiubo Zhang <zhangxiubo@gmail.com>
+Date: Sun, 11 Oct 2026 12:53:30 +0100
+Subject: [PATCH 2/2] Preserve child parent pointers when merging Streams nodes
+
+---
+ package.json                      | 2 +-
+ plugins/streams/action-macros.tid | 5 ++++-
+ plugins/streams/fork_notes.tid    | 4 +++-
+ plugins/streams/plugin.info       | 2 +-
+ 4 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/package.json b/package.json
+index 8ff5152..32c2fa3 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "streams",
+-  "version": "1.3.0",
++  "version": "1.3.1",
+   "description": "tw5 plugin",
+   "tiddlywiki-plugin": "plugins/streams",
+   "config": {
+diff --git a/plugins/streams/action-macros.tid b/plugins/streams/action-macros.tid
+index 09d0334..c2f6971 100644
+--- a/plugins/streams/action-macros.tid
++++ b/plugins/streams/action-macros.tid
+@@ -194,6 +194,9 @@ title: $:/plugins/sq/streams/action-macros
+ 		<$action-confirm $message="Merge with previous node?" $prompt={{$:/config/sq/streams/prompt-merge-with-previous}}>
+ 			<$action-setfield $tiddler="$:/state/sq/streams/caret-position" text={{{[<previous-node>get[text]length[]]}}}/>
+ 			<$action-setfield $tiddler=<<previous-node>> text={{{[<previous-node>get[text]!is[blank]else[]addsuffix{!!text}]}}} stream-list={{!!stream-list}}/>
++			<$list filter="[enlist{!!stream-list}]">
++				<$action-setfield $tiddler=<<currentTiddler>> parent=<<previous-node>>/>
++			</$list>
+ 			<$action-setfield $tiddler=<<row-edit-state>> text=<<previous-node>>/>
+ 			<$action-listops $tiddler={{!!parent}} $field="stream-list" $subfilter="+[is[tiddler]] -[<currentTiddler>]"/>			
+ 			<$action-deletetiddler $tiddler=<<currentTiddler>>/>
+@@ -342,4 +345,4 @@ title: $:/plugins/sq/streams/action-macros
+ </$list>
+ </$vars>
+ </$vars>
+-\end
+\ No newline at end of file
++\end
+diff --git a/plugins/streams/fork_notes.tid b/plugins/streams/fork_notes.tid
+index eb7057b..450cb12 100644
+--- a/plugins/streams/fork_notes.tid
++++ b/plugins/streams/fork_notes.tid
+@@ -1,6 +1,6 @@
+ title: $:/plugins/sq/streams/fork_notes
+ 
+-! Research fork 1.3.0
++! Research fork 1.3.1
+ 
+ Based on upstream Streams 1.2.24, commit 17dfc9cf634338f986acc99413113884cfaba2a0. The plugin keeps its existing title and node fields, and replaces the upstream plugin when installed.
+ 
+@@ -15,3 +15,5 @@ Based on upstream Streams 1.2.24, commit 17dfc9cf634338f986acc99413113884cfaba2a
+ When edit-mode integration is enabled, new drafts capture their initial structural fields. Saving keeps later node moves and child-list updates when those fields were not explicitly edited in the draft. Explicit draft field edits take precedence. Draft bookkeeping is removed on save. Drafts created before installing this version have no baseline and retain the core's save behavior.
+ 
+ The supported acceptance-test target for this fork is TiddlyWiki 5.4.1 with Relink 2.6.1. The research presentation choices belong in the separate Research customizations plugin.
++
++Version 1.3.1 also corrects child parent pointers when merging a node into its previous sibling. The child transfer now updates both directions before removing the old node.
+diff --git a/plugins/streams/plugin.info b/plugins/streams/plugin.info
+index adf9798..c5e849d 100644
+--- a/plugins/streams/plugin.info
++++ b/plugins/streams/plugin.info
+@@ -5,7 +5,7 @@
+   "plugin-type": "plugin",
+   "plugin-priority": "1",
+   "author": "Saq Imtiaz",
+-  "version": "1.3.0",
++  "version": "1.3.1",
+   "core-version": ">=5.3.0",
+   "list": "Settings CHANGELOG fork_notes",
+   "source": "https://saqimtiaz.github.io/streams/",
+-- 
+2.43.0
+

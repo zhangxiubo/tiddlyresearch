@@ -1,0 +1,12 @@
+title: $:/plugins/xiubo/research/styles/dividers
+tags: $:/tags/Stylesheet
+list-after: $:/plugins/sq/streams/styles
+
+.stream-row-nochildren + .stream-row-children {
+	border-left: none;
+	height: 0.1em;
+}
+
+.stream-droppable-spacer {
+    height: 0.1em;
+}

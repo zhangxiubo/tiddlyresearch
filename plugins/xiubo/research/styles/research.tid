@@ -1,0 +1,12 @@
+title: $:/plugins/xiubo/research/styles/research
+tags: $:/tags/Stylesheet
+list-after: $:/plugins/sq/streams/styles
+
+.hzone-focus {
+  border-color: firebrick;
+}
+
+pre {
+  margin-top: 0em;
+  margin-bottom: 0em;
+}

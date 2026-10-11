@@ -1,0 +1,3 @@
+title: $:/config/sq/streams/node_tags_filter
+
+[all[current]links[]prefix[#]] [all[current]tags[]addprefix[#]]

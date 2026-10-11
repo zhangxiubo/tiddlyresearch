@@ -1,0 +1,27 @@
+title: $:/plugins/xiubo/research/readme
+
+! Research customizations 1.0.0
+
+This plugin supplies the research-specific presentation for the maintained Streams fork:
+
+* Publication-aware breadcrumb labels, linked reference previews, and reference counts.
+* Publication, author and topic templates, with Relink configuration for the associated list fields.
+* Node marker colours, reference-panel spacing, editor font and background preferences.
+* Streams in the main editor through the fork's supported integration.
+* A small Recent sidebar template that excludes child nodes while retaining the core result-limit setting.
+
+Streams owns node interaction and traversal. This plugin configures its extension points; it does not replace the Streams row, stylesheet, breadcrumb view or core editor body.
+
+Personal helper macros, third-party plugin enable/disable choices, and other wiki preferences remain in the wiki.
+
+!! Local migration
+
+The project command `python3 bin/stage_research_upgrade.py --source-export SNAPSHOT.json --wiki-info tiddlywiki.info --target NEW_LOCAL_DIRECTORY` builds a fresh local copy. It checks the known customization bodies against `migrations/research_customizations.json` before making changes, archives the source, removes superseded overrides, and retires active template tags on documentation tiddlers while retaining their content and child notes.
+
+Run `node bin/test_research_plugins.js PATH_TO_TIDDLYWIKI_RUNTIME` from the project to test the two plugins after startup. Keep the live wiki separate until the staged copy passes acceptance testing.
+
+The Streams submodule uses local branch `codex/research-streams`, commit `1a97a32` (Streams 1.3.1), based on upstream commit `17dfc9cf634338f986acc99413113884cfaba2a0`. The source change is also retained as `patches/streams/research-streams.patch`; it can be applied with `git am` to a checkout of that upstream commit. The fork has not been published, so publish it and update the submodule URL before relying on a fresh recursive clone for deployment.
+
+Run `python3 bin/test_stage_research_upgrade.py` to check migration behavior, and `node bin/verify_research_stage.js PATH_TO_TIDDLYWIKI_RUNTIME LOCAL_WIKI_DIRECTORY` to compare the staged wiki with its archived source. Verification allows local title/sidebar changes and the existing Today startup action's date refresh. It requires the original note bodies and relationships to remain unchanged.
+
+Editing child nodes while a parent draft is open writes to the child nodes immediately. Discarding the parent draft discards the parent's draft text; it does not undo those separate child edits. Saved parent drafts merge structural updates through the Streams fork.

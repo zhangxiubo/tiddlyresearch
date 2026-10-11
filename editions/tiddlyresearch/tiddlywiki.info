@@ -7,6 +7,7 @@
 		"tiddlywiki/hammerjs",
 		"tiddlywiki/markdown",
 		"tiddlywiki/codemirror",
+		"tiddlywiki/codemirror-mode-css",
 		"tiddlywiki/codemirror-autocomplete",
 		"tiddlywiki/codemirror-search-replace",
 		"tiddlywiki/katex",
@@ -17,7 +18,8 @@
 		"kixam/moment",
 		"kixam/timeline",
 		"snowgoon88/edit-comptext",
-		"sq/streams"
+		"sq/streams",
+		"xiubo/research"
 	],
 	"themes": [
 		"tiddlywiki/vanilla",

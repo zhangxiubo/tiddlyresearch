@@ -1,0 +1,7 @@
+title: $:/plugins/xiubo/research/templates/reference_count
+tags: $:/tags/streams/row_decorations
+
+\whitespace trim
+<$list filter="[all[current]backlinks[]!is[draft]count[]compare:integer:gt[0]]" variable="reference_count">
+<span class="stream-node-block sq-backref-count"><$text text=<<reference_count>>/></span>
+</$list>

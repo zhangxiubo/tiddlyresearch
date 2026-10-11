@@ -1,0 +1,14 @@
+title: $:/plugins/xiubo/research/templates/topics
+tags: $:/tags/ViewTemplate
+
+<$list filter='[list[!!topics]limit[1]]' variable=dummy>
+<hr>
+Topics:
+<$list filter='[list[!!topics]butlast[]]'><$link><$view field="title"/></$link>, </$list>
+<$list filter='[list[!!topics]last[]]'><$link><$view field="title"/></$link></$list>
+</$list>
+<$list filter='[contains:topics<currentTiddler>limit[1]]' variable=dummy>
+<hr>
+Topic by: <$list filter='[contains:topics<currentTiddler>butlast[]]'><$link><$view field="title"/></$link>, </$list>
+<$list filter='[contains:topics<currentTiddler>last[]]'><$link><$view field="title"/></$link></$list>
+</$list>

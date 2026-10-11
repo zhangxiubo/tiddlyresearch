@@ -1,0 +1,13 @@
+title: $:/plugins/xiubo/research/styles/editor_background
+tags: $:/tags/Stylesheet
+list-after: $:/plugins/sq/streams/styles
+
+.stream-node-block textarea {
+	background: <<color background>> !important;
+}
+
+.tc-tiddler-frame .stream-node-block input.tc-edit-texteditor,
+.tc-tiddler-frame .stream-node-block textarea.tc-edit-texteditor,
+.tc-tiddler-frame .stream-node-block iframe.tc-edit-texteditor {
+	background: transparent !important;
+}

@@ -1,0 +1,19 @@
+title: $:/plugins/xiubo/research/styles/editor_font
+tags: $:/tags/Stylesheet
+list-after: $:/plugins/sq/streams/styles
+
+div.tc-tiddler-edit-frame textarea {
+    font-family: monospace;
+}
+
+input.tc-edit-texteditor {
+    font-family: monospace;
+}
+
+tr.tc-edit-field {
+    font-family: monospace;
+}
+
+textarea.streams-editor  {
+    font-family: monospace;
+}

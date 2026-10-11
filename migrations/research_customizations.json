@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "title": "$:/core/ui/EditTemplate/body",
+      "action": "delete",
+      "text_sha256": "1c5672ad5ecf8afdb99ccc5a6f2d6b68024b0fec2f71ed8db5619509dec079b1"
+    },
+    {
+      "title": "$:/core/ui/SideBar/Recent",
+      "action": "delete",
+      "text_sha256": "3d4291b5994bb69aedd7c8d8b82c86b20208a710a241de037294407c527effdb"
+    },
+    {
+      "title": "$:/plugins/sq/streams/breadcrumbs-view-template",
+      "action": "delete",
+      "text_sha256": "47f1bb7d570614c8f516170516a1d05c9f375715f3185dfd705cb97c251ece59"
+    },
+    {
+      "title": "$:/plugins/sq/streams/breadcrumbs-macro",
+      "action": "delete",
+      "text_sha256": "d059d4e9d6831c7ceb34f60729433510ff191902d4b5a6bed39ed7b3c0208ebe"
+    },
+    {
+      "title": "$:/plugins/sq/streams/styles",
+      "action": "delete",
+      "text_sha256": "0a0771c73066fc0e555c9c4b721521f419e98a60ada83c777ea78b1c1a5d0e4a"
+    },
+    {
+      "title": "$:/plugins/sq/streams/templates/stream-row-template",
+      "action": "delete",
+      "text_sha256": "1f8ee387a82c8840eb7a086064d48aea1952af1e769c262e3a711b60d1dd386a"
+    },
+    {
+      "title": "$:/plugins/sq/streams/templates/backlink-count-template",
+      "action": "delete",
+      "text_sha256": "5a879379c7db5ee36638baea8394b603f1577a85bd7e80bd0adb496782851370"
+    },
+    {
+      "title": "$:/config/sq/streams/editor-engine",
+      "action": "delete",
+      "text_sha256": "982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1"
+    },
+    {
+      "title": "$:/config/sq/streams/enable-breadcrumbs",
+      "action": "delete",
+      "text_sha256": "8a798890fe93817163b10b5f7bd2ca4d25d84c52739a645a889c173eee7d9d3d"
+    },
+    {
+      "title": "$:/config/sq/streams/enable-edit-toolbar",
+      "action": "delete",
+      "text_sha256": "9390298f3fb0c5b160498935d79cb139aef28e1c47358b4bbba61862b9c26e59"
+    },
+    {
+      "title": "$:/config/sq/streams/node-max-width",
+      "action": "delete",
+      "text_sha256": "8597f1e3043654da36e26467d59c6c6bbc9c44d498cc15ab2f91fc84440bbc35"
+    },
+    {
+      "title": "$:/config/shortcuts/streams-delete",
+      "action": "delete",
+      "text_sha256": "392853f98c02476686a5f58731351680fdfdb7324c0288895f9a41f73909dd2a"
+    },
+    {
+      "title": "$:/config/flibbles/relink/fields/aliases",
+      "action": "delete",
+      "text_sha256": "a330395cc0a53ad1207736546afff4735940937564bbf75ce1edad40780d9139"
+    },
+    {
+      "title": "$:/config/flibbles/relink/fields/topics",
+      "action": "delete",
+      "text_sha256": "a330395cc0a53ad1207736546afff4735940937564bbf75ce1edad40780d9139"
+    },
+    {
+      "title": "$:/config/flibbles/relink/fields/publication.authors",
+      "action": "delete",
+      "text_sha256": "a330395cc0a53ad1207736546afff4735940937564bbf75ce1edad40780d9139"
+    },
+    {
+      "title": "Author Template",
+      "action": "retire",
+      "text_sha256": "083c0e8f50f7f7857cf10b375bfe57bc29b9b34969b4ce09127eeb1c577012e3"
+    },
+    {
+      "title": "Publication Template",
+      "action": "retire",
+      "text_sha256": "31d99baa6fa88bc9c317f528a2f3347aa2f1622e30fd6a2b1baff72736c4f884"
+    },
+    {
+      "title": "Topics Template",
+      "action": "retire",
+      "text_sha256": "30eac366a419e997547b50caa947cda8308d9992b67b5713e89aa1224f136849"
+    },
+    {
+      "title": "backlink_template",
+      "action": "retire",
+      "text_sha256": "c559b7cbfd57f65ff626ef1d7349468b42e68b5febc68245de23323e14d8efc5"
+    },
+    {
+      "title": "Data Node Stylesheet",
+      "action": "retire",
+      "text_sha256": "5654090409825924e1b8e4453b88413316092aca69eb8182e8a2d8f6c9932c77"
+    },
+    {
+      "title": "Streams Backref Count Stylesheet",
+      "action": "retire",
+      "text_sha256": "71629ccebec22c48b88735b29014be378840b3902897b6f86f57e42d499302b9"
+    },
+    {
+      "title": "Streams Divider Stylesheet",
+      "action": "retire",
+      "text_sha256": "6923d56ab021631c21e8871c36003eaa203ae2f918c11427c8ea38eea3237868"
+    },
+    {
+      "title": "Monospace Editor Font Stylesheet",
+      "action": "retire",
+      "text_sha256": "d6f72bd6edb5b0c3b1628aa7e478505e78723947bed3f7f75265ede6cdc0c952"
+    },
+    {
+      "title": "Back-references Indentation Stylesheet",
+      "action": "retire",
+      "text_sha256": "306f386575a3c2b66c251b4582126c97d33b00a0b3f8027cb97e6bd01465f67a"
+    },
+    {
+      "title": "custom_css_stylesheet",
+      "action": "retire",
+      "text_sha256": "8dfb5d425106d7a6b4d417e531bdce9134ac332795a716541c380d0a6c337779"
+    }
+  ]
+}

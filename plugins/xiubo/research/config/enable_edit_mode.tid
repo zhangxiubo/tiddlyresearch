@@ -1,0 +1,6 @@
+title: $:/config/sq/streams/enable_edit_mode
+caption: Show outline in the editor
+description: Edit child nodes while the parent text is open in the main editor
+settings-template: $:/plugins/sq/streams/ui/templates/settings/input-switch
+
+yes

@@ -1,0 +1,12 @@
+title: $:/plugins/xiubo/research/templates/author
+tags: $:/tags/ViewTemplate
+
+<$list filter='[all[current]tag[Author]limit[1]]' variable=dummy>
+<hr/>
+<b>Publications</b>:
+<br/>
+<$list filter='[contains:publication.authors<currentTiddler>]'>
+<$link><$view field="title"/></$link>: {{!!publication.title}}
+<br/>
+</$list>
+</$list>
