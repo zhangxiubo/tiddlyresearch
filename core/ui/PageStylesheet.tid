@@ -1,4 +1,5 @@
 title: $:/core/ui/PageStylesheet
+code-body: yes
 
 \import [subfilter{$:/core/config/GlobalImportFilter}]
 \whitespace trim
@@ -6,6 +7,8 @@ title: $:/core/ui/PageStylesheet
 <$set name="currentTiddler" value={{$:/language}}>
 
 <$set name="languageTitle" value={{!!name}}>
+
+<$transclude $tiddler="$:/core/stylesheets/custom-properties" $mode="block"/>
 
 <$list filter="[all[shadows+tiddlers]tag[$:/tags/Stylesheet]!has[draft.of]]">
 <$transclude mode="block"/>

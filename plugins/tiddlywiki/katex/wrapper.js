@@ -6,22 +6,19 @@ module-type: widget
 Wrapper for `katex.min.js` that provides a `<$latex>` widget. It is also available under the alias `<$katex>`
 
 \*/
-(function(){
 
-/*jslint node: true, browser: true */
-/*global $tw: false */
 "use strict";
 
 var katex = require("$:/plugins/tiddlywiki/katex/katex.min.js"),
-    chemParse = require("$:/plugins/tiddlywiki/katex/mhchem.min.js"),
 	Widget = require("$:/core/modules/widgets/widget.js").widget;
+require("$:/plugins/tiddlywiki/katex/mhchem.min.js");
 
 katex.macros = {};
 katex.updateMacros = function() {
 	var tiddlers = $tw.wiki.getTiddlersWithTag("$:/tags/KaTeX/Macro"),
 		regex = /#\d/g, // Remove the arguments like #1#2
 		tid, macro, cmd;
-	for (var i=0; i < tiddlers.length; i++) {
+	for(var i=0; i < tiddlers.length; i++) {
 		tid = $tw.wiki.getTiddler(tiddlers[i]);
 		try {
 			macro = tid.fields["caption"];
@@ -94,6 +91,3 @@ KaTeXWidget.prototype.refresh = function(changedTiddlers) {
 
 exports.latex = KaTeXWidget;
 exports.katex = KaTeXWidget;
-
-})();
-

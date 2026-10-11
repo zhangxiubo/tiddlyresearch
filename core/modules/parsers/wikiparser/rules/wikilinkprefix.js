@@ -10,10 +10,7 @@ Wiki text inline rule for suppressed wiki links. For example:
 ```
 
 \*/
-(function(){
 
-/*jslint node: true, browser: true */
-/*global $tw: false */
 "use strict";
 
 exports.name = "wikilinkprefix";
@@ -30,11 +27,11 @@ Parse the most recent match
 */
 exports.parse = function() {
 	// Get the details of the match
-	var linkText = this.match[0];
+	var linkText = this.match[0],
+		// Start after the suppressing "~" so the span matches the plain text
+		start = this.parser.pos + 1;
 	// Move past the wikilink
 	this.parser.pos = this.matchRegExp.lastIndex;
 	// Return the link without unwikilink character as plain text
-	return [{type: "text", text: linkText.substr(1)}];
+	return [{type: "text", text: linkText.substr(1), start: start, end: this.parser.pos}];
 };
-
-})();

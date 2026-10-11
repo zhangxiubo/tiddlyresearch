@@ -6,10 +6,7 @@ module-type: library
 Text editor engine based on a simple input or textarea within an iframe. This is done so that the selection is preserved even when clicking away from the textarea
 
 \*/
-(function(){
 
-/*jslint node: true,browser: true */
-/*global $tw: false */
 "use strict";
 
 var HEIGHT_VALUE_TITLE = "$:/config/TextEditor/EditorHeight/Height";
@@ -37,7 +34,7 @@ function FramedEngine(options) {
 	var paletteTitle = this.widget.wiki.getTiddlerText("$:/palette");
 	var colorScheme = (this.widget.wiki.getTiddler(paletteTitle) || {fields: {}}).fields["color-scheme"] || "light";
 	this.iframeDoc.open();
-	this.iframeDoc.write("<meta name='color-scheme' content='" + colorScheme + "'>");
+	this.iframeDoc.write("<!DOCTYPE html><html><head><meta name='color-scheme' content='" + colorScheme + "'></head><body></body></html>");
 	this.iframeDoc.close();
 	// Style the iframe
 	this.iframeNode.className = this.dummyTextArea.className;
@@ -60,7 +57,7 @@ function FramedEngine(options) {
 		this.domNode.value = this.value;
 	}
 	// Set the attributes
-	if(this.widget.editType) {
+	if(this.widget.editType && this.widget.editTag !== "textarea") {
 		this.domNode.setAttribute("type",this.widget.editType);
 	}
 	if(this.widget.editPlaceholder) {
@@ -159,14 +156,13 @@ Fix the height of textarea to fit content
 FramedEngine.prototype.fixHeight = function() {
 	// Make sure styles are updated
 	this.copyStyles();
-	// Adjust height
 	if(this.widget.editTag === "textarea") {
 		if(this.widget.editAutoHeight) {
 			if(this.domNode && !this.domNode.isTiddlyWikiFakeDom) {
 				var newHeight = $tw.utils.resizeTextAreaToFit(this.domNode,this.widget.editMinHeight);
 				this.iframeNode.style.height = newHeight + "px";
 			}
-		} else {
+		} else if(!this.widget.editRows) {
 			var fixedHeight = parseInt(this.widget.wiki.getTiddlerText(HEIGHT_VALUE_TITLE,"400px"),10);
 			fixedHeight = Math.max(fixedHeight,20);
 			this.domNode.style.height = fixedHeight + "px";
@@ -200,7 +196,7 @@ FramedEngine.prototype.handleFocusEvent = function(event) {
 Handle a keydown event
  */
 FramedEngine.prototype.handleKeydownEvent = function(event) {
-	if ($tw.keyboardManager.handleKeydownEvent(event, {onlyPriority: true})) {
+	if($tw.keyboardManager.handleKeydownEvent(event, {onlyPriority: true})) {
 		return true;
 	}
 
@@ -273,5 +269,3 @@ FramedEngine.prototype.executeTextOperation = function(operation) {
 };
 
 exports.FramedEngine = FramedEngine;
-
-})();

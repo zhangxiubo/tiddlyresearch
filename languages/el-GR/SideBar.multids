@@ -1,6 +1,7 @@
 title: $:/language/SideBar/
 
 All/Caption: Άπαντα
+Caption: Πλευρική εργαλειοθήκη
 Contents/Caption: Περιεχόμενα
 Drafts/Caption: Πρόχειρα
 Explorer/Caption: Εξερευνητής
@@ -12,6 +13,6 @@ Recent/Caption: Πρόσφατα
 Shadows/Caption: Σκιώδη
 System/Caption: Συστήματος
 Tags/Caption: Ετικέτες
-Tags/Untagged/Caption: Χωρίς ετικέτα
+Tags/Untagged/Caption: χωρίς ετικέτα
 Tools/Caption: Εργαλεία
 Types/Caption: Τύποι

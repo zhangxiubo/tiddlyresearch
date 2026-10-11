@@ -11,10 +11,7 @@ definition text
 ```
 
 \*/
-(function(){
 
-/*jslint node: true, browser: true */
-/*global $tw: false */
 "use strict";
 
 exports.name = "parameters";
@@ -26,7 +23,7 @@ Instantiate parse rule
 exports.init = function(parser) {
 	this.parser = parser;
 	// Regexp to match
-	this.matchRegExp = /^\\parameters\s*\(([^)]*)\)(\s*\r?\n)?/mg;
+	this.matchRegExp = /\\parameters\s*\(([^)]*)\)(\s*\r?\n)?/mg;
 };
 
 /*
@@ -56,5 +53,3 @@ exports.parse = function() {
 		orderedAttributes: orderedAttributes
 	}];
 };
-
-})();

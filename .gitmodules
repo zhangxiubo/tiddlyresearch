@@ -6,7 +6,7 @@
 	url = https://github.com/flibbles/tw5-uglify.git
 [submodule "plugins/repos/streams"]
 	path = plugins/repos/streams
-	url = https://github.com/saqimtiaz/streams.git
+	url = https://github.com/zhangxiubo/streams.git
 [submodule "plugins/repos/TW5-moment.js"]
 	path = plugins/repos/TW5-moment.js
 	url = https://github.com/kixam/TW5-moment.js.git

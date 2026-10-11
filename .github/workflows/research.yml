@@ -1,0 +1,28 @@
+name: Research edition
+
+on:
+  push:
+    branches:
+      - xiubo
+      - codex/tested-research-upgrade
+  pull_request:
+    branches:
+      - xiubo
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - run: node bin/test_research_plugins.js .
+      - run: node bin/test_streams_graph.js
+      - run: python3 bin/test_stage_research_upgrade.py
+      - run: node bin/test_research_installation.js

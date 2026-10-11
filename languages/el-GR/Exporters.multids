@@ -1,6 +1,6 @@
 title: $:/language/Exporters/
 
-CsvFile: CSV αρχείο
-JsonFile: JSON αρχείο
-StaticRiver: Στατική HTML
-TidFile: ".tid" αρχείο
+CsvFile: αρχείο CSV
+JsonFile: αρχείο JSON
+StaticRiver: στατική HTML
+TidFile: αρχείο κειμένου TID

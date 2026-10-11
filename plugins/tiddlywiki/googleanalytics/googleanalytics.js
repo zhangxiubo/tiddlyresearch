@@ -3,13 +3,10 @@ title: $:/plugins/tiddlywiki/googleanalytics/googleanalytics.js
 type: application/javascript
 module-type: startup
 
-Runs Google Analytics with the account number in the tiddler `$:/GoogleAnalyticsAccount` and the domain name in `$:/GoogleAnalyticsDomain`
+Runs Google Analytics with the measurement ID in the tiddler `$:/GoogleAnalyticsMeasurementID`
 
 \*/
-(function(){
 
-/*jslint node: true, browser: true */
-/*global $tw: false */
 "use strict";
 
 // Export name and synchronous status
@@ -28,7 +25,7 @@ exports.startup = function() {
 			var gaMeasurementID = $tw.wiki.getTiddlerText("$:/GoogleAnalyticsMeasurementID","").replace(/\n/g,"");
 			var url ="https://www.googletagmanager.com/gtag/js?id=" + gaMeasurementID;
 			window.dataLayer = window.dataLayer || [];
-			window.gtag = function() { window.dataLayer?.push(arguments); };
+			window.gtag = function() { if(window.dataLayer) window.dataLayer.push(arguments); };
 			window.gtag("js",new Date());
 			window.gtag("config",gaMeasurementID);
 			const scriptElement = window.document.createElement("script");
@@ -55,7 +52,3 @@ exports.startup = function() {
 		}
 	}
 };
-
-
-
-})();

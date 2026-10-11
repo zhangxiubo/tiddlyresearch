@@ -6,17 +6,14 @@ tags: [[$:/tags/test-spec]]
 Tests the compare filter.
 
 \*/
-(function(){
 
-/* jslint node: true, browser: true */
 /* eslint-env node, browser, jasmine */
 /* eslint no-mixed-spaces-and-tabs: ["error", "smart-tabs"]*/
-/* global $tw, require */
 "use strict";
 
 describe("'compare' filter tests", function() {
 
-	var wiki = new $tw.Wiki();
+	var wiki = $tw.test.wiki();
 
 	it("should compare numerical equality", function() {
 		expect(wiki.filterTiddlers("[[2]compare:number:eq[0003]]").join(",")).toBe("");
@@ -81,4 +78,3 @@ describe("'compare' filter tests", function() {
 
 });
 
-})();

@@ -1,7 +1,6 @@
 {
 	"description": "A step by step introduction to TiddlyWiki",
 	"plugins": [
-		"tiddlywiki/cecily",
 		"tiddlywiki/codemirror",
 		"tiddlywiki/highlight",
 		"tiddlywiki/katex"
@@ -25,6 +24,7 @@
 		"de-DE",
 		"el-GR",
 		"en-US",
+		"en-PH",
 		"es-ES",
 		"fa-IR",
 		"fr-FR",
@@ -34,12 +34,15 @@
 		"it-IT",
 		"ja-JP",
 		"ko-KR",
+		"mk-MK",
 		"nl-NL",
 		"pa-IN",
+		"pl-PL",
 		"pt-BR",
 		"pt-PT",
 		"ru-RU",
 		"sk-SK",
+		"sl-SI",
 		"sv-SE",
 		"zh-CN",
 		"zh-Hans",

@@ -1,15 +1,29 @@
 created: 20211128212902292
-modified: 20211128212904721
-tags: [[Filter Syntax]] [[Filter Run Prefix]]
+from-version: 5.1.23
+modified: 20230710073322863
+rp-input: all titles from previous filter runs
+rp-output: the titles that are present in both the result of this filter run and the output from previous runs
+rp-purpose: find the intersection of titles from previous runs with titles in this filter
+tags: [[Named Filter Run Prefix]]
 title: Intersection Filter Run Prefix
 type: text/vnd.tiddlywiki
 
-<<.from-version "5.1.23">>
+<$railroad text="""
+\start none
+\end none
+( ":intersection" | - )
+[[run|"Filter Run"]]
+"""/>
 
-|''purpose'' |find the intersection of titles from previous runs with titles in this filter run |
-|''input'' |all titles from previous filter runs |
-|''output''|the titles that are present in both the result of this filter run and the output from previous runs |
+The filter output from previous runs is set aside. The `:intersection` filter run is started with all tiddler titles as input. Once this filter run has completed, the output is compared to the set-aside output. A new output is produced that contains only titles that appeared in both the set-aside output and the latest output. The order of titles in the output is preserved from the accumulated results.
 
-The filter output from previous runs is set aside. The `:intersection` filter run is started with all tiddler titles as input. Once this latest filter run has completed, the latest output is compared to the set-aside output. A new output is produced that contains only titles that appeared in both the set-aside output and the latest output.
+!! Difference from `:and` / `+`
 
-[[Examples|Intersection Filter Run Prefix (Examples)]]
+The key difference between `:intersection` and `:and` (or `+`) is what they receive as ''input'':
+
+* `:and` / `+` feeds the ''accumulated results so far'' as input to the filter run. Operators in the run can only see and work with titles already in the results.
+* `:intersection` feeds ''all tiddler titles'' as input to the filter run (just like an unprefixed run), then keeps only titles that also appear in the accumulated results.
+
+This means `:intersection` can match titles using operators that need to start from the full tiddler pool. See [[Interchangeable Filter Run Prefixes]] for more details.
+
+[[Intersection Filter Run Prefix (Examples)]]

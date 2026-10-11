@@ -11,10 +11,7 @@ Wiki text inline rule for code runs. For example:
 ```
 
 \*/
-(function(){
 
-/*jslint node: true, browser: true */
-/*global $tw: false */
 "use strict";
 
 exports.name = "codeinline";
@@ -33,13 +30,17 @@ exports.parse = function() {
 	// Look for the end marker
 	reEnd.lastIndex = this.parser.pos;
 	var match = reEnd.exec(this.parser.source),
-		text;
+		text,
+		start = this.parser.pos,
+		textEnd;
 	// Process the text
 	if(match) {
 		text = this.parser.source.substring(this.parser.pos,match.index);
+		textEnd = match.index;
 		this.parser.pos = match.index + match[0].length;
 	} else {
 		text = this.parser.source.substr(this.parser.pos);
+		textEnd = this.parser.sourceLength;
 		this.parser.pos = this.parser.sourceLength;
 	}
 	return [{
@@ -47,9 +48,9 @@ exports.parse = function() {
 		tag: "code",
 		children: [{
 			type: "text",
-			text: text
+			text: text,
+			start: start,
+			end: textEnd
 		}]
 	}];
 };
-
-})();

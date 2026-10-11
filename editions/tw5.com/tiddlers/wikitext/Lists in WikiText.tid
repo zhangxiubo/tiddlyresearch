@@ -1,6 +1,6 @@
 caption: Lists
 created: 20131205160257619
-modified: 20160607093103220
+modified: 20260405094604397
 tags: WikiText Lists
 title: Lists in WikiText
 type: text/vnd.tiddlywiki
@@ -43,12 +43,16 @@ Here's an example the other way around, with numbers as the first level:
 #** And the other
 ">>
 
+! Description Lists
+
+{{Description Lists in WikiText}}
+
 ! CSS Classes
 
 You can also assign a CSS class to an individual member of a list with this notation:
 
 <<wikitext-example src:"* List One
-*.MyClass List Two
+*.tc-muted List Two
 * List Three
 ">>
 

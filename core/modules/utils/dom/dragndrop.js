@@ -6,10 +6,7 @@ module-type: utils
 Browser data transfer utilities, used with the clipboard and drag and drop
 
 \*/
-(function(){
 
-/*jslint node: true, browser: true */
-/*global $tw: false */
 "use strict";
 
 /*
@@ -41,8 +38,7 @@ exports.makeDraggable = function(options) {
 				dragFilter = options.dragFilterFn && options.dragFilterFn(),
 				titles = dragTiddler ? [dragTiddler] : [],
 				startActions = options.startActions,
-				variables,
-				domNodeRect;
+				variables;
 			if(dragFilter) {
 				titles.push.apply(titles,options.widget.wiki.filterTiddlers(dragFilter,options.widget));
 			}
@@ -80,7 +76,7 @@ exports.makeDraggable = function(options) {
 				if(dataTransfer.setDragImage) {
 					if(dragImageType === "pill") {
 						dataTransfer.setDragImage(dragImage.firstChild,-16,-16);
-					} else if (dragImageType === "blank") {
+					} else if(dragImageType === "blank") {
 						dragImage.removeChild(dragImage.firstChild);
 						dataTransfer.setDragImage(dragImage,0,0);
 					} else {
@@ -106,7 +102,9 @@ exports.makeDraggable = function(options) {
 					dataTransfer.setData("text/vnd.tiddler",jsonData);
 					dataTransfer.setData("text/plain",titleString);
 					dataTransfer.setData("text/x-moz-url","data:text/vnd.tiddler," + encodeURIComponent(jsonData));
-				} else {
+				}
+				// If browser is Chrome-like and has a touch-input device do NOT .setData
+				if(!($tw.browser.isMobileChrome)) {
 					dataTransfer.setData("URL","data:text/vnd.tiddler," + encodeURIComponent(jsonData));
 				}
 				dataTransfer.setData("Text",titleString);
@@ -152,7 +150,7 @@ exports.importDataTransfer = function(dataTransfer,fallbackTitle,callback) {
 	if($tw.log.IMPORT) {
 		console.log("Available data types:");
 		for(var type=0; type<dataTransfer.types.length; type++) {
-			console.log("type",dataTransfer.types[type],dataTransfer.getData(dataTransfer.types[type]))
+			console.log("type",dataTransfer.types[type],dataTransfer.getData(dataTransfer.types[type]));
 		}
 	}
 	for(var t=0; t<importDataTypes.length; t++) {
@@ -163,7 +161,7 @@ exports.importDataTransfer = function(dataTransfer,fallbackTitle,callback) {
 			// Import the tiddlers in the data
 			if(data !== "" && data !== null) {
 				if($tw.log.IMPORT) {
-					console.log("Importing data type '" + dataType.type + "', data: '" + data + "'")
+					console.log("Importing data type '" + dataType.type + "', data: '" + data + "'");
 				}
 				var tiddlerFields = dataType.toTiddlerFieldsArray(data,fallbackTitle);
 				callback(tiddlerFields);
@@ -182,7 +180,7 @@ exports.importPaste = function(item,fallbackTitle,callback) {
 
 			item.getAsString(function(data){
 				if($tw.log.IMPORT) {
-					console.log("Importing data type '" + dataType.type + "', data: '" + data + "'")
+					console.log("Importing data type '" + dataType.type + "', data: '" + data + "'");
 				}
 				var tiddlerFields = dataType.toTiddlerFieldsArray(data,fallbackTitle);
 				callback(tiddlerFields);
@@ -201,7 +199,7 @@ exports.itemHasValidDataType = function(item) {
 		}
 	}
 	return false;
-}
+};
 
 var importDataTypes = [
 	{type: "text/vnd.tiddler", IECompatible: false, toTiddlerFieldsArray: function(data,fallbackTitle) {
@@ -273,5 +271,3 @@ exports.dragEventContainsFiles = function(event) {
 };
 
 exports.dragEventContainsType = dragEventContainsType;
-
-})();
