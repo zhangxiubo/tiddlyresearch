@@ -80,7 +80,7 @@ test("fresh research installation loads dependencies, persists edits and exports
 			assert.equal(response.status,200);
 			assert.match(await response.text(),/\$:\/plugins\/xiubo\/research/);
 			const versions = {
-				"$:/core":"5.4.1","$:/plugins/sq/streams":"1.3.1","$:/plugins/xiubo/research":"1.0.0",
+				"$:/core":"5.4.1","$:/plugins/sq/streams":"1.3.2","$:/plugins/xiubo/research":"1.0.1",
 				"$:/plugins/flibbles/relink":"2.6.1","$:/plugins/flibbles/relink-titles":"2.6.0",
 				"$:/plugins/flibbles/uglify":"1.11.1","$:/plugins/kixam/moment":"2.30.1",
 				"$:/plugins/wikilabs/uni-link":"3.0.4"

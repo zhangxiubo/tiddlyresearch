@@ -36,11 +36,11 @@ tw.boot.boot(() => {
 		}
 		checked++;
 	}
-	assert.strictEqual(wiki.getTiddler("$:/plugins/sq/streams").fields.version,"1.3.1");
-	assert.strictEqual(wiki.getTiddler("$:/plugins/xiubo/research").fields.version,"1.0.0");
+	assert.strictEqual(wiki.getTiddler("$:/plugins/sq/streams").fields.version,"1.3.2");
+	assert.strictEqual(wiki.getTiddler("$:/plugins/xiubo/research").fields.version,"1.0.1");
 	assert.strictEqual(wiki.getShadowSource("$:/core/ui/EditTemplate/body"),"$:/core");
 	assert.strictEqual(wiki.getShadowSource("$:/plugins/sq/streams/templates/stream-row-template"),"$:/plugins/sq/streams");
 	assert.strictEqual(wiki.getShadowSource("$:/config/sq/streams/breadcrumb_template"),"$:/plugins/xiubo/research");
-	console.log(JSON.stringify({core:tw.version,original_tiddlers_verified:checked,migrated_customizations:entries.size,streams:"1.3.1",research:"1.0.0"}));
+	console.log(JSON.stringify({core:tw.version,original_tiddlers_verified:checked,migrated_customizations:entries.size,streams:"1.3.2",research:"1.0.1"}));
 	process.exit(0);
 });

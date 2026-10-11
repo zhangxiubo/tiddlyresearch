@@ -1,7 +1,7 @@
 From 054cfeee471ae310ce83290c7ab11ed9ac741be1 Mon Sep 17 00:00:00 2001
 From: Xiubo Zhang <zhangxiubo@gmail.com>
 Date: Sun, 11 Oct 2026 12:07:00 +0100
-Subject: [PATCH 1/2] Add shared Streams rendering and research extension
+Subject: [PATCH 1/3] Add shared Streams rendering and research extension
  points
 
 ---
@@ -605,7 +605,7 @@ index 27d2905..41b9ff9 100644
 From 1a97a328c896229137083d5aa48a8b67a10c8b29 Mon Sep 17 00:00:00 2001
 From: Xiubo Zhang <zhangxiubo@gmail.com>
 Date: Sun, 11 Oct 2026 12:53:30 +0100
-Subject: [PATCH 2/2] Preserve child parent pointers when merging Streams nodes
+Subject: [PATCH 2/3] Preserve child parent pointers when merging Streams nodes
 
 ---
  package.json                      | 2 +-
@@ -678,6 +678,81 @@ index adf9798..c5e849d 100644
    "core-version": ">=5.3.0",
    "list": "Settings CHANGELOG fork_notes",
    "source": "https://saqimtiaz.github.io/streams/",
+-- 
+2.43.0
+
+
+From 2503b639a79bd05fe8af8aad5c0874e1cb90c426 Mon Sep 17 00:00:00 2001
+From: Xiubo Zhang <zhangxiubo@gmail.com>
+Date: Sun, 11 Oct 2026 22:56:49 +0100
+Subject: [PATCH 3/3] Unify complete breadcrumbs and preserve separator spacing
+
+---
+ plugins/streams/fork_notes.tid                          | 4 ++--
+ plugins/streams/plugin.info                             | 2 +-
+ plugins/streams/templates/breadcrumbs-view-template.tid | 2 ++
+ plugins/streams/templates/breadcrumbs.tid               | 3 ++-
+ 4 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/plugins/streams/fork_notes.tid b/plugins/streams/fork_notes.tid
+index 450cb12..5742e0c 100644
+--- a/plugins/streams/fork_notes.tid
++++ b/plugins/streams/fork_notes.tid
+@@ -1,13 +1,13 @@
+ title: $:/plugins/sq/streams/fork_notes
+ 
+-! Research fork 1.3.1
++! Research fork 1.3.2
+ 
+ Based on upstream Streams 1.2.24, commit 17dfc9cf634338f986acc99413113884cfaba2a0. The plugin keeps its existing title and node fields, and replaces the upstream plugin when installed.
+ 
+ * Uses current event attributes and supports server-side rendering without browser swipe APIs.
+ * The outline and editable node previews share one interaction template, including context menus, keyboard actions and swipe handling.
+ * `templates/node_preview` renders the current node and its children with editing controls.
+-* `templates/breadcrumbs` renders ancestors using the configurable `$:/config/sq/streams/breadcrumb_template`. Traversal stops at missing parents and repeated nodes.
++* `templates/breadcrumbs` renders the complete path for both open notes and linked references. Ancestors use the configurable `$:/config/sq/streams/breadcrumb_template`; the final link identifies the current node with ◯, or its title for a root note. Traversal stops at missing parents and repeated nodes.
+ * `$:/config/sq/streams/node_tags_filter` supplies the values for node styling.
+ * Tiddlers tagged `$:/tags/streams/row_decorations` add content beside each row without replacing the row template.
+ * `$:/config/sq/streams/enable_edit_mode` enables outlines in the core editor through `$:/tags/EditTemplate`.
+diff --git a/plugins/streams/plugin.info b/plugins/streams/plugin.info
+index c5e849d..2c36544 100644
+--- a/plugins/streams/plugin.info
++++ b/plugins/streams/plugin.info
+@@ -5,7 +5,7 @@
+   "plugin-type": "plugin",
+   "plugin-priority": "1",
+   "author": "Saq Imtiaz",
+-  "version": "1.3.1",
++  "version": "1.3.2",
+   "core-version": ">=5.3.0",
+   "list": "Settings CHANGELOG fork_notes",
+   "source": "https://saqimtiaz.github.io/streams/",
+diff --git a/plugins/streams/templates/breadcrumbs-view-template.tid b/plugins/streams/templates/breadcrumbs-view-template.tid
+index 17cedd4..d3291a0 100644
+--- a/plugins/streams/templates/breadcrumbs-view-template.tid
++++ b/plugins/streams/templates/breadcrumbs-view-template.tid
+@@ -7,7 +7,9 @@ type: text/vnd.tiddlywiki
+ 
+ <$list filter="""[<folded-state>get[text]!is[blank]else[show]!match[hide]]""" variable="_NULL">
+ <$list filter="[{$:/config/sq/streams/enable-breadcrumbs}match[yes]]" variable="_NULL">
++<$list filter="[all[current]has[parent]]" variable="breadcrumb_node">
+ {{||$:/plugins/sq/streams/templates/breadcrumbs}}
+ </$list>
+ </$list>
++</$list>
+ 
+diff --git a/plugins/streams/templates/breadcrumbs.tid b/plugins/streams/templates/breadcrumbs.tid
+index c7a0282..29ba49f 100644
+--- a/plugins/streams/templates/breadcrumbs.tid
++++ b/plugins/streams/templates/breadcrumbs.tid
+@@ -2,5 +2,6 @@ title: $:/plugins/sq/streams/templates/breadcrumbs
+ 
+ \whitespace trim
+ <$list filter="[all[current]stream_ancestors[]]">
+-<span class="sq-breadcrumbs-fragment"><$link to=<<currentTiddler>>><$transclude tiddler={{$:/config/sq/streams/breadcrumb_template}}/></$link> &gt; </span>
++<span class="sq-breadcrumbs-fragment"><$link to=<<currentTiddler>>><$transclude tiddler={{$:/config/sq/streams/breadcrumb_template}}/></$link>&nbsp;&gt;&nbsp;</span>
+ </$list>
++<span class="sq-breadcrumbs-fragment"><$link to=<<currentTiddler>>><$text text={{{ [all[current]has[parent]then[◯]] ~[all[current]get[title]] }}}/></$link></span>
 -- 
 2.43.0
 

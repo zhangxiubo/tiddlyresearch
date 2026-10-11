@@ -1,6 +1,6 @@
 title: $:/plugins/xiubo/research/readme
 
-! Research customizations 1.0.0
+! Research customizations 1.0.1
 
 This plugin supplies the research-specific presentation for the maintained Streams fork:
 
@@ -20,13 +20,13 @@ The project command `python3 bin/stage_research_upgrade.py --source-export SNAPS
 
 Run `node bin/test_research_plugins.js PATH_TO_TIDDLYWIKI_RUNTIME` from the project to test the two plugins after startup. Keep the live wiki separate until the staged copy passes acceptance testing.
 
-The Streams submodule pins commit `1a97a32` (Streams 1.3.1) from [[zhangxiubo/streams|https://github.com/zhangxiubo/streams]], branch `codex/research-streams`, based on upstream commit `17dfc9cf634338f986acc99413113884cfaba2a0`. The source change is also retained as `patches/streams/research-streams.patch`; it can be applied with `git am` to a checkout of that upstream commit.
+The Streams submodule pins commit `2503b63` (Streams 1.3.2) from [[zhangxiubo/streams|https://github.com/zhangxiubo/streams]], branch `codex/research-streams`, based on upstream commit `17dfc9cf634338f986acc99413113884cfaba2a0`. The source change is also retained as `patches/streams/research-streams.patch`; it can be applied with `git am` to a checkout of that upstream commit.
 
 !! Reproducible installation
 
 Clone the project with `git clone --recurse-submodules --branch codex/tested-research-upgrade https://github.com/zhangxiubo/tiddlyresearch.git`. For an existing checkout, run `git submodule update --init --recursive`; the recursive option is needed for Moment's nested dependency. Use the recorded revisions, without `--remote`.
 
-This checkout contains TiddlyWiki 5.4.1, Streams 1.3.1, Research customizations 1.0.0, Relink 2.6.1 / Relink Titles 2.6.0, Uglify 1.11.1, Moment 2.30.1, and Uni-link 3.0.4. Timeline 0.8.1, Edit-comptext 0.9.3, and the bundled HammerJS plugin retain the versions used in the local trial. Existing wiki plugin-disable preferences remain in the wiki.
+This checkout contains TiddlyWiki 5.4.1, Streams 1.3.2, Research customizations 1.0.1, Relink 2.6.1 / Relink Titles 2.6.0, Uglify 1.11.1, Moment 2.30.1, and Uni-link 3.0.4. Timeline 0.8.1, Edit-comptext 0.9.3, and the bundled HammerJS plugin retain the versions used in the local trial. Existing wiki plugin-disable preferences remain in the wiki.
 
 Create a fresh research wiki with `node tiddlywiki.js PATH_TO_NEW_WIKI --init tiddlyresearch`. Start it with `node tiddlywiki.js PATH_TO_NEW_WIKI --listen host=127.0.0.1 port=8080`. Node.js runs this server; Python 3 is needed only for the customization migration and its tests. No npm installation is required to start the research edition.
 

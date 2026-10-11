@@ -45,7 +45,25 @@ describe("Streams research integration",function() {
 		var html = render(prefix + "breadcrumbs-view-template","Research Child");
 		expect(html).toContain('href="#Research%20Root"');
 		expect(html).toContain("A parent paragraph");
-		expect(html).not.toContain('href="#Research%20Child"');
+		expect(html).toContain('href="#Research%20Child"');
+		expect(html.split("◯").length - 1).toBe(1);
+	});
+	it("uses the same complete breadcrumb in an open note and its reference",function() {
+		wiki.addTiddler({title: "Research Target",text: "Target"});
+		wiki.setText("Research Child","text",null,"Reference to [[Research Target]]");
+		var breadcrumb = render(prefix + "templates/breadcrumbs","Research Child").replace(/^<p>|<\/p>$/g,""),
+			references = render("$:/plugins/xiubo/research/templates/linked_references","Research Target");
+		expect(render(prefix + "breadcrumbs-view-template","Research Child")).toContain(breadcrumb);
+		expect(references).toContain(breadcrumb);
+		expect(references.split("◯").length - 1).toBe(1);
+	});
+	it("identifies root references by title without adding breadcrumbs above root notes",function() {
+		wiki.addTiddler({title: "Research Target",text: "Target"});
+		wiki.setText("Research Root","text",null,"Reference to [[Research Target]]");
+		var references = render("$:/plugins/xiubo/research/templates/linked_references","Research Target");
+		expect(references).toContain('href="#Research%20Root"');
+		expect(references).not.toContain("◯");
+		expect(render(prefix + "breadcrumbs-view-template","Research Root")).not.toContain('href="#Research%20Root"');
 	});
 	it("uses publication labels without rendering the publication body",function() {
 		wiki.addTiddler(new $tw.Tiddler(wiki.getTiddler("Research Root"),{
